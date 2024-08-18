@@ -39,6 +39,12 @@ dependencies:
   flutter_riverpod:
   flutter_dotenv:
   google_generative_ai:
+  flutter_launcher_icons:
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon_app.png"
 
 dev_dependencies:
   flutter_test:
