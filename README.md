@@ -1,117 +1,66 @@
-# 🤖 ChatterBox-AI App
+# ChatterBox AI
 
-<div align="start">
-     <a href="https://api.visitorbadge.io/api/visitors?path=ChatterBox-AI-App&label=People%20who%20visited%20this%20page&countColor=%23263759" target="_blank">
-        <img src="https://api.visitorbadge.io/api/visitors?path=ChatterBox-AI-App&label=People%20who%20visited%20this%20page&countColor=%23263759" target="_blank" />
-    </a>
-    <a href="https://www.linkedin.com/in/mustafa-sayed11/" target="_blank">
-        <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" target="_blank" />
-    </a>
-  <a href="mailto:mustafasayed20002@gmail.com">
-    <img src="https://img.shields.io/badge/Gmail-333333?style=for-the-badge&logo=gmail&logoColor=red" />
-<!--   </a>
-    <a href="https://youtube.com/@ammarageeza91?si=bHNizIHn9dIL3jX7">
-    <img src="https://img.shields.io/badge/Youtube-red?style=for-the-badge&logo=youtube&logoColor=white" />
-  </a> -->
-     <a href="https://mostaql.com/u/mustafa_sayed11">
-    <img src="https://img.shields.io/badge/Portfolio-0077B5?style=for-the-badge&logoColor=white" />
-  </a>
-<!--      </a>
-     <a href="https://t.me/ammarageeza">
-    <img src="https://img.shields.io/badge/Telegram-0077B5?style=for-the-badge&logo=telegram&logoColor=white" />
-  </a> -->
-</div>
+A Flutter AI chat app (Gemini-style) with light/dark themes, onboarding, and a chat UI ready to connect to your own backend AI proxy.
 
-## 🚀 Getting Started
+## Features
 
-- ChatterBox-AI-App is designed to help users `Chat with AI` like chatGpt efficiently and stay productive throughout their day. 
-- App notifies the user Random time To encourage using `flutter_local_notifications`.
-- Our App reminds users daily at 9 AM ⏰to chat with him.
+- **Onboarding flow** — splash → onboarding → chat.
+- **Chat UI** — message bubbles, input with send/clear, reversed list; accessible labels.
+- **Gemini aesthetics** — brand blue palette, light & dark themes.
+- **Notifications (planned)** — daily reminder to chat.
+- **AI service via backend proxy** — the app never holds an API key; see Security below.
 
-## 🤳 Screens
+## Security notice
 
-- **Splash Screen:** Wait for 3 seconds then navigate to `On-Boarding Screens`. 
-- **On-Boarding Screens:** Provide a seamless and engaging introduction to our app.
-- **Home Screen:** The User can Chat and Ask anything
-- **Chat:** User can Ask AI anything like `Summarizing a story` , `Summarizing Video` , `Summarizing Audio` and `Summarizing Image`  .
+**API keys must never be stored in client-side Flutter applications.** Any key embedded in a Flutter app — whether through `.env` files, compile-time variables, or source code — can be extracted from the built application.
 
-<hr>
-<!-- <h3>
-  <a href="https://www.youtube.com/watch?v=eRK9pI98EUk&list=PLYfTCw9blWRNh4jiQO3kVNd34jUD6MD9m&index=1&t=4s&pp=gAQBiAQB">
-    👨🏻‍🎓 Get this app on YouTube Playlist Tutorials
-  </a>
-</h3>
-<p align= "center">
-    <a href="https://www.youtube.com/watch?v=eRK9pI98EUk&list=PLYfTCw9blWRNh4jiQO3kVNd34jUD6MD9m&index=1&t=4s&pp=gAQBiAQB">
-     <kbd>
-        <img  src="https://github.com/AmmarAgeeza/ChatterBox-AI-App/assets/72443818/0f267f9e-d2a3-41c6-8a4b-17a0b12abd6d" alt="Get this app on YouTube Playlist Tutorials">
-     </kbd>
-  </a> -->
+This application requires a **backend proxy** to handle AI API calls securely. The Flutter app sends user messages to your backend, and the backend calls the AI service with the API key stored in server-side secrets.
 
-## ✨ Cover
+**Chat currently shows a safe "AI service is not configured" message until a proxy is deployed.**
 
-![Cover_d](https://github.com/user-attachments/assets/8db78867-2687-4c0f-ba79-f047b37c3260)
+### Required backend endpoint
 
-## 📁 Project Structure
+```
+POST /api/chat
+Content-Type: application/json
 
-![Screenshot from 2024-08-17 12-00-28](https://github.com/user-attachments/assets/0bb3f5ee-e378-404e-8e26-d7a05a199453)
+Request:
+{ "message": "user's chat message" }
 
+Response (success):
+{ "response": "AI model's response text" }
 
-## 📱 UI
-
-### 🌕 Light Mode
-
-
-![Mobile](https://github.com/user-attachments/assets/f4740b89-45e5-46d7-a682-b98e87bebf1d)
-
-
-![Mobile (2)](https://github.com/user-attachments/assets/5ae4b08a-7ddb-4d58-b84f-c4a5229e7958)
-
-### Dark Mode
-
-![Mobile (1)](https://github.com/user-attachments/assets/01d99397-374d-4a3a-bd1d-304fd57daae4)
-
-![Mobile (3)](https://github.com/user-attachments/assets/0fb3d4c5-409e-4e44-bdef-90a5c48d3b1a)
-
-
-
-
-## 🎥 Video
-
-
-https://github.com/user-attachments/assets/80829599-d83d-4c9f-90e6-4699b21ad25d
-
-
-
-## 🛠 Dependencies
-
-```pubspec.yaml
-  flutter_native_splash:
-  flutter_riverpod:
-  flutter_dotenv:
-  google_generative_ai:
-  flutter_launcher_icons
+Response (error):
+{ "error": "human-readable error message" }
 ```
 
-## ☢️ Usage
+Security requirements: server-side secret storage, authentication, rate limiting (e.g., 30 req/min/user), input length limits, allowed-origin restrictions, and safe error logging. Recommended platforms: Firebase Cloud Functions, Cloud Run, Supabase Edge Functions, or NestJS.
 
-1. **Clone the repository**
+## Usage
 
-2. **Open the project in your preferred Flutter IDE.**
+1. `flutter pub get`
+2. Deploy the backend proxy (see `.env.example`)
+3. `flutter run`
 
-3. **Explore the `lib` directory:**
+## Project structure
 
-    - Review the project structure to understand the core of the app.
-    - Customize the app of your need.
+```
+lib/
+├── core/
+│   ├── theme/        # ThemeNotifier (Riverpod), light/dark ThemeData
+│   └── utils/        # assets, common helpers
+├── features/
+│   ├── auth/         # onboarding screen
+│   └── chat_gemini/  # home/chat screen, Message model
+└── test/             # 17 passing tests
+```
 
-4. **Run the app on an emulator or physical device:**
+State management: **Riverpod** (`ProviderScope` + `StateNotifierProvider`). Navigation: imperative `Navigator`.
 
-    ```bash
-    flutter run
-    ```
+## Contributing
 
-## 🚨 Contributing
+Contributions are welcome — open an issue or submit a PR.
 
-- Contributions are welcome 💜
-- If you encounter any issues or have suggestions for improvements, please open an issue or submit a pull request.
+## License
 
+All rights reserved. Demo/portfolio project.

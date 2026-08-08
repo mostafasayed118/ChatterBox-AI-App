@@ -11,6 +11,60 @@ class FontSize {
   static const double extraExtraLarge = 26;
 }
 
+// Shared theme properties used by both light and dark themes
+final _elevatedButtonTheme = ElevatedButtonThemeData(
+  style: ButtonStyle(
+    backgroundColor: WidgetStatePropertyAll(
+      AppColors.primaryColor,
+    ),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+    ),
+    textStyle: WidgetStatePropertyAll(
+      const TextStyle(
+        color: AppColors.whiteColor,
+        fontWeight: FontWeight.w600,
+        fontSize: FontSize.large,
+      ),
+    ),
+  ),
+);
+
+InputDecorationTheme _inputDecorationTheme({required Color fillColor}) {
+  return InputDecorationTheme(
+    filled: true,
+    fillColor: fillColor,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(30)),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: BorderSide.none,
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: BorderSide(color: AppColors.redColor),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: BorderSide(color: AppColors.redColor),
+    ),
+    hintStyle: const TextStyle(
+      color: AppColors.greyLightColor,
+      fontWeight: FontWeight.w600,
+      fontSize: FontSize.extraSmall,
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+  );
+}
+
 ThemeData lightModeTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.whiteColor,
   brightness: Brightness.light,
@@ -27,80 +81,27 @@ ThemeData lightModeTheme = ThemeData(
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(
-      color: AppColors.whiteColor,
+      color: AppColors.blackColor,
       fontWeight: FontWeight.w800,
       fontSize: FontSize.large,
     ),
     bodyMedium: TextStyle(
-      color: AppColors.whiteColor,
+      color: AppColors.blackColor,
       fontWeight: FontWeight.w600,
       fontSize: FontSize.medium,
     ),
     bodySmall: TextStyle(
-      color: AppColors.whiteColor,
+      color: AppColors.greyColor,
       fontWeight: FontWeight.w400,
       fontSize: FontSize.small,
     ),
   ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll(
-        AppColors.primaryColor,
-      ),
-      shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-      textStyle: WidgetStatePropertyAll(
-        const TextStyle(
-          color: AppColors.whiteColor,
-          fontWeight: FontWeight.w600,
-          fontSize: FontSize.large,
-        ),
-      ),
-    ),
-  ),
-  inputDecorationTheme: InputDecorationTheme(
-    filled: true,
+  elevatedButtonTheme: _elevatedButtonTheme,
+  inputDecorationTheme: _inputDecorationTheme(
     fillColor: AppColors.whiteLightColor,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(30),
-      ),
-      borderSide: BorderSide.none,
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide.none,
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide.none,
-    ),
-    errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide(
-        color: AppColors.redColor,
-      ),
-    ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide(
-        color: AppColors.redColor,
-      ),
-    ),
-    hintStyle: const TextStyle(
-      color: AppColors.greyLightColor,
-      fontWeight: FontWeight.w600,
-      fontSize: FontSize.extraSmall,
-    ),
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 20,
-      vertical: 10,
-    ),
   ),
 );
+
 ThemeData darkModeTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.blackColor,
   brightness: Brightness.dark,
@@ -110,7 +111,7 @@ ThemeData darkModeTheme = ThemeData(
     elevation: 1,
     centerTitle: false,
   ),
-  colorScheme: const ColorScheme.light(
+  colorScheme: const ColorScheme.dark(
     primary: AppColors.primaryColor,
     secondary: AppColors.whiteColor,
     brightness: Brightness.dark,
@@ -132,62 +133,8 @@ ThemeData darkModeTheme = ThemeData(
       fontSize: FontSize.small,
     ),
   ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll(
-        AppColors.primaryColor,
-      ),
-      shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-      textStyle: WidgetStatePropertyAll(
-        const TextStyle(
-          color: AppColors.whiteColor,
-          fontWeight: FontWeight.w600,
-          fontSize: FontSize.large,
-        ),
-      ),
-    ),
-  ),
-  inputDecorationTheme: InputDecorationTheme(
-    filled: true,
-    fillColor: AppColors.whiteLightColor,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(30),
-      ),
-      borderSide: BorderSide.none,
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide.none,
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide.none,
-    ),
-    errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide(
-        color: AppColors.redColor,
-      ),
-    ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30),
-      borderSide: BorderSide(
-        color: AppColors.redColor,
-      ),
-    ),
-    hintStyle: const TextStyle(
-      color: AppColors.greyLightColor,
-      fontWeight: FontWeight.w600,
-      fontSize: FontSize.extraSmall,
-    ),
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 20,
-      vertical: 10,
-    ),
+  elevatedButtonTheme: _elevatedButtonTheme,
+  inputDecorationTheme: _inputDecorationTheme(
+    fillColor: AppColors.greyColor,
   ),
 );

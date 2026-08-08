@@ -1,8 +1,8 @@
 class AppStrings {
   //! onboarding screen
-  static const String onboardingTitle = "You AI Assistant";
+  static const String onboardingTitle = "Your AI Assistant";
   static const String onboardingSubTitle =
-      "Using this software,you can ask you questions and receive articles using artificial intelligence assistant";
+      "Using this app, you can ask your questions and receive answers using an artificial intelligence assistant.";
 
   //! Home screen
   static const String homeScreenTitle = "ChatterBox AI";

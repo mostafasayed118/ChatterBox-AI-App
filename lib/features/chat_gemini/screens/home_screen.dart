@@ -1,15 +1,9 @@
-// ignore_for_file: unused_local_variable
-
-import 'dart:developer';
-
 import 'package:chat_ai_app/core/utils/app_assets.dart';
 import 'package:chat_ai_app/core/utils/app_colors.dart';
 import 'package:chat_ai_app/core/utils/app_strings.dart';
 import 'package:chat_ai_app/features/chat_gemini/model/message.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 
 import '../../../core/theme/theme_notifier.dart';
 
@@ -22,37 +16,41 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final List<Message> _message = [];
+  final List<Message> _messages = [];
   bool _isLoad = false;
   final _formKey = GlobalKey<FormState>();
 
-  callGeminiModel() async {
-    try {
-      if (_messageController.text.isNotEmpty) {
-        _message.add(Message(text: _messageController.text, isUser: true));
-        _isLoad = true;
-        setState(() {});
-      }
-      final model = GenerativeModel(
-          model: 'gemini-1.5-pro', apiKey: dotenv.env['GOOGLE_API_KEY']!);
-      final prompt = _messageController.text.trim();
-      final content = [Content.text(prompt)];
-      final response = await model.generateContent(content);
-
-      setState(() {
-        _message.add(Message(text: response.text!, isUser: false));
-        _isLoad = false;
-      });
-    } catch (e) {
-      log(e.toString());
-    }
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
   }
 
-  @override
-  void initState() {
-    final currentTheme = ref.read(themeProvider);
+  Future<void> callGeminiModel() async {
+    if (_messageController.text.isEmpty) return;
 
-    super.initState();
+    setState(() {
+      _messages.add(Message(text: _messageController.text, isUser: true));
+      _isLoad = true;
+    });
+
+    // AI service is not configured. A backend proxy is required.
+    // See README.md for setup instructions.
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
+    setState(() {
+      _messages.add(Message(
+        text: 'AI chat is temporarily unavailable. The backend service that '
+            'processes AI requests has not been configured yet. '
+            'Please see the project README for setup instructions.',
+        isUser: false,
+      ));
+      _isLoad = false;
+    });
+
+    _messageController.clear();
   }
 
   @override
@@ -105,19 +103,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         actions: [
-          //! icon button voice chat
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.voice_chat),
-          ),
           //! icon button dark mode and light mode
-          IconButton(
-            onPressed: () {
-              ref.read(themeProvider.notifier).toggleTheme();
-            },
-            icon: Icon(Theme.of(context).brightness == Brightness.dark
-                ? Icons.light_mode_outlined
-                : Icons.dark_mode_outlined),
+          Semantics(
+            label: 'Toggle dark mode',
+            child: IconButton(
+              onPressed: () {
+                ref.read(themeProvider.notifier).toggleTheme();
+              },
+              icon: Icon(Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined),
+            ),
           ),
         ],
       ),
@@ -125,63 +121,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _message.length,
+              reverse: true,
+              itemCount: _messages.length,
               itemBuilder: (context, index) {
-                final message = _message[index];
-                return ListTile(
-                  title: Align(
-                    alignment: message.isUser
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: Row(
-                      mainAxisAlignment: message.isUser
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.7),
-                          // width: MediaQuery.of(context).size.width * 0.7,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: message.isUser
-                                ? AppColors.primaryColor
-                                : AppColors.whiteLightColor,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(20),
-                              topRight: const Radius.circular(20),
-                              bottomLeft:
-                                  Radius.circular(message.isUser ? 20 : 0),
-                              bottomRight:
-                                  Radius.circular(message.isUser ? 0 : 20),
+                final message = _messages[index];
+                return Semantics(
+                  label: message.isUser ? 'You said' : 'AI said',
+                  child: ListTile(
+                    title: Align(
+                      alignment: message.isUser
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: message.isUser
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.7),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: message.isUser
+                                  ? AppColors.primaryColor
+                                  : AppColors.whiteLightColor,
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(20),
+                                topRight: const Radius.circular(20),
+                                bottomLeft:
+                                    Radius.circular(message.isUser ? 20 : 0),
+                                bottomRight:
+                                    Radius.circular(message.isUser ? 0 : 20),
+                              ),
+                            ),
+                            child: Text(
+                              message.text,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                      fontSize: 13,
+                                      fontWeight: message.isUser
+                                          ? FontWeight.w700
+                                          : FontWeight.w400,
+                                      color: message.isUser
+                                          ? AppColors.whiteColor
+                                          : AppColors.greyColor),
                             ),
                           ),
-                          child: Text(
-                            // overflow: TextOverflow.ellipsis,
-                            message.text,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    fontSize: 13,
-                                    fontWeight: message.isUser
-                                        ? FontWeight.w700
-                                        : FontWeight.w400,
-                                    color: message.isUser
-                                        ? AppColors.whiteColor
-                                        : AppColors.greyColor),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        !message.isUser
-                            ? const CircleAvatar(
-                                radius: 15,
-                                backgroundImage:
-                                    AssetImage(AppAssets.chatGemini),
-                              )
-                            : const SizedBox(),
-                      ],
+                          const SizedBox(width: 10),
+                          !message.isUser
+                              ? const CircleAvatar(
+                                  radius: 15,
+                                  backgroundImage:
+                                      AssetImage(AppAssets.chatGemini),
+                                )
+                              : const SizedBox(),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -197,7 +195,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 color: AppColors.whiteLightColor,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.greyLightColor.withOpacity(0.2),
+                    color: AppColors.greyLightColor.withValues(alpha: 0.2),
                     blurRadius: 7,
                     spreadRadius: 5,
                   ),
@@ -205,49 +203,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               child: Form(
                 key: _formKey,
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return AppStrings.searchError;
-                    }
-                    return null;
-                  },
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        color: AppColors.greyColor,
-                        fontSize: 14,
+                child: Semantics(
+                  label: 'Message input',
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return AppStrings.searchError;
+                      }
+                      return null;
+                    },
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: AppColors.greyColor,
+                          fontSize: 14,
+                        ),
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding:
+                          Theme.of(context).inputDecorationTheme.contentPadding,
+                      hintText: AppStrings.searchHint,
+                      suffixIcon: Semantics(
+                        label: 'Send message',
+                        child: IconButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              callGeminiModel();
+                            }
+                          },
+                          icon: _isLoad
+                              ? const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColors.primaryColor),
+                                )
+                              : Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _messages.clear();
+                                          });
+                                        },
+                                        icon: Icon(
+                                            Icons.cleaning_services_rounded,
+                                            color: AppColors.redColor)),
+                                    const Icon(Icons.send,
+                                        color: AppColors.primaryColor),
+                                  ],
+                                ),
+                        ),
                       ),
-                  controller: _messageController,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding:
-                        Theme.of(context).inputDecorationTheme.contentPadding,
-                    hintText: AppStrings.searchHint,
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {}
-                        callGeminiModel();
-                        _messageController.clear();
-                      },
-                      icon: _isLoad
-                          ? const CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.primaryColor),
-                            )
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _message.clear();
-                                      });
-                                    },
-                                    icon: Icon(Icons.cleaning_services_rounded,
-                                        color: AppColors.redColor)),
-                                const Icon(Icons.send,
-                                    color: AppColors.primaryColor),
-                              ],
-                            ),
                     ),
                   ),
                 ),
